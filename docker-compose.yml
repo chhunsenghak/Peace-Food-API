@@ -1,0 +1,26 @@
+services: 
+  app:
+    build: .
+    container_name: e-learning-api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/e-learning
+      - JWT_SECRET=your_jwt_secret
+    volumes:
+      - .:/app
+      - /app/node_modules
+  
+  mongo:
+    image: mongo:latest
+    container_name: e-learning-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+    
