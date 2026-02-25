@@ -108,9 +108,6 @@ router.post("/users", validate(CreateUserDto), createUser);
  *           schema:
  *             type: object
  *             properties:
- *               email:
- *                 type: string
- *                 example: test@gmail.com
  *               username:
  *                 type: string
  *                 example: johndoe
