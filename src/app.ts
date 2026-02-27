@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from "express";
+import cookieParser from "cookie-parser";
 import path from "path";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
@@ -13,6 +14,18 @@ const createSwaggerSpec = () => {
         version: "1.0.0",
         description: `API documentation for the ${process.env.PROJECT_NAME ?? "PeaceFood"} platform`,
       },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+          },
+        },
+      },
+      security: [
+        {bearerAuth: []},
+      ],
     },
     // Use __dirname so this works in both:
     // - dev (ts-node / nodemon) where __dirname points to src/
@@ -28,6 +41,7 @@ export const createApp = (): Express => {
   const app = express();
 
   app.use(express.json());
+  app.use(cookieParser()); // Add cookie parsing middleware for more secure token handling
 
   app.use("/api", routes);
 
@@ -36,7 +50,12 @@ export const createApp = (): Express => {
   });
 
   const swaggerSpec = createSwaggerSpec();
-  app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      persistAuthorization: true, // Keep the JWT token in the UI after page refresh
+      filter: true, // Add a search box to filter endpoints
+    },
+  }));
 
   return app;
 };

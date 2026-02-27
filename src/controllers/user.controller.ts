@@ -1,69 +1,59 @@
 import { Request, Response } from "express";
-import { User } from "../models/user";
-export const createUser = async (req: Request, res: Response) => {
-  try {
-    const { email, username, password, role } = req.body;
-    
-    // Check if user with the same email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: "User with this email already exists" });
-    }
-
-    const user = new User({ email, username, password, role });
-    await user.save();
-    res.status(201).json({ message: "User created successfully", user });
-  } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+import {
+  getAllUsers as GetAllUsersService,
+  getUserById as GetUserByIdService,
+  updateUser as UpdateUserService,
+  deleteUser as DeleteUserService,
+} from "../services/user.service";
 
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find().select("-password");
-    res.json(users);
+    const users = await GetAllUsersService();
+    res.json({ data: users });
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
+
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.params.id).select("-password");
+    const user = await GetUserByIdService(req.params.id as string);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    res.json(user);
+    res.json({ data: user });
   } catch (error) {
     console.error("Error fetching user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
+
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const { email, username, role } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { email, username, role },
-      { new: true }
-    );
+    const user = await UpdateUserService(req.params.id as string, {
+      email,
+      username,
+      role,
+    });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    res.json({ message: "User updated successfully", user });
+    res.json({ message: "User updated successfully" });
   } catch (error) {
     console.error("Error updating user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
+
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const user = await DeleteUserService(req.params.id as string);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }

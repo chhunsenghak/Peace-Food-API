@@ -1,17 +1,27 @@
 import { Schema, model } from "mongoose";
+import { UserRole } from "../enum/userRole";
 
 export interface IUser {
-    email: string;
-    username: string;
-    password: string;
-    role: "student" | "instructor" | "admin";
+  email: string;
+  username: string;
+  password: string;
+  phoneNumber?: string;
+  role: UserRole;
 }
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUser>(
+  {
     email: { type: String, required: true, unique: true },
     username: { type: String, required: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ["student", "instructor", "admin"], default: "student" },
-}, { timestamps: true });
+    phoneNumber: { type: String },
+    role: {
+      type: String,
+      enum: Object.values(UserRole),
+      default: UserRole.STAFF,
+    },
+  },
+  { timestamps: true },
+);
 
 export const User = model<IUser>("User", userSchema);

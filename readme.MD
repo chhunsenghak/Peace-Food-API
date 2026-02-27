@@ -99,11 +99,13 @@ Default URL (if `PORT=3000`):
 
 ```text
 src/
-	config/        # database config
+	config/        # database config 
 	controllers/   # request handlers
-	dto/           # zod schemas
+	dao/		   # Data Access Object
+	dto/           # Data Transfter Object 
 	middleware/    # express middleware
 	models/        # mongoose models
+	service/       # business login
 	routes/        # express routes + swagger annotations
 ```
 

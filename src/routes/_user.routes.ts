@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { validate } from "../middleware/validate";
-import { CreateUserDto } from "../dto/user.dto";
+import { authMiddleware } from "../middleware/auth.middleware";
+import { UpdateUserDto } from "../dto/user.dto";
 import {
   getUserById,
   getUsers,
-  createUser,
   updateUser,
   deleteUser,
 } from "../controllers/user.controller";
@@ -23,7 +23,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.get("/users", getUsers);
+router.get("/users", authMiddleware, getUsers);
 
 /**
  * @swagger
@@ -46,47 +46,9 @@ router.get("/users", getUsers);
  *       500:
  *         description: Internal server error
  */
-router.get("/users/:id", getUserById);
+router.get("/users/:id", authMiddleware, getUserById);
 
-/**
- * @swagger
- * /api/users:
- *   post:
- *     summary: Create a new user account
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - username
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 example: test@gmail.com
- *               username:
- *                 type: string
- *                 example: johndoe
- *               password:
- *                 type: string
- *                 example: 123456
- *               role:
- *                 type: string
- *                 enum:
- *                   - student
- *                   - instructor
- *                   - admin
- *     responses:
- *       201:
- *         description: User created successfully
- *       400:
- *         description: Validation error
- */
-router.post("/users", validate(CreateUserDto), createUser);
+
 
 /**
  * @swagger
@@ -111,12 +73,6 @@ router.post("/users", validate(CreateUserDto), createUser);
  *               username:
  *                 type: string
  *                 example: johndoe
- *               role:
- *                 type: string
- *                 enum:
- *                   - student
- *                   - instructor
- *                   - admin
  *     responses:
  *       200:
  *         description: User updated successfully
@@ -125,7 +81,7 @@ router.post("/users", validate(CreateUserDto), createUser);
  *       500:
  *         description: Internal server error
  */
-router.put("/users/:id", validate(CreateUserDto), updateUser);
+router.patch("/users/:id", authMiddleware, validate(UpdateUserDto), updateUser);
 
 /**
  * @swagger
@@ -148,6 +104,6 @@ router.put("/users/:id", validate(CreateUserDto), updateUser);
  *       500:
  *         description: Internal server error
  */
-router.delete("/users/:id", deleteUser);
+router.delete("/users/:id", authMiddleware, deleteUser);
 
 export default router;
