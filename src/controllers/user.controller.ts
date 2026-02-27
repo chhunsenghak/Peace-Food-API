@@ -5,14 +5,17 @@ import {
   updateUser as UpdateUserService,
   deleteUser as DeleteUserService,
 } from "../services/user.service";
+import { isAppError } from "../utils/errorGuards";
 
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
     const users = await GetAllUsersService();
     res.json({ data: users });
-  } catch (error) {
-    console.error("Error fetching users:", error);
+  } catch (error: unknown) {
+    if (isAppError(error)) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -21,12 +24,11 @@ export const getUsers = async (req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
   try {
     const user = await GetUserByIdService(req.params.id as string);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
     res.json({ data: user });
-  } catch (error) {
-    console.error("Error fetching user:", error);
+  } catch (error: unknown) {
+    if (isAppError(error)) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -34,18 +36,12 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { email, username, role } = req.body;
-    const user = await UpdateUserService(req.params.id as string, {
-      email,
-      username,
-      role,
-    });
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
+    const user = await UpdateUserService(req.params.id as string, req.body);
+    res.json({ message: "User updated successfully", data: user });
+  } catch (error: unknown) {
+    if (isAppError(error)) {
+      return res.status(error.statusCode).json({ error: error.message });
     }
-    res.json({ message: "User updated successfully" });
-  } catch (error) {
-    console.error("Error updating user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -58,8 +54,10 @@ export const deleteUser = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "User not found" });
     }
     res.json({ message: "User deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting user:", error);
+  } catch (error: unknown) {
+    if (isAppError(error)) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 };

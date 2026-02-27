@@ -3,6 +3,7 @@ import { registerUser, loginUser} from "../services/auth.service";
 import { JWT_SECRET, JWT_EXPIRES_IN } from "../config/jwt";
 import { User } from "../models/user";
 import { AuthRequest } from "../middleware/auth.middleware";
+import { isAppError } from "../utils/errorGuards";
 import jwt from "jsonwebtoken";
 
 export const register = async (req: Request, res: Response) => {
@@ -26,8 +27,10 @@ export const register = async (req: Request, res: Response) => {
       message: "User created successfully",
       data: { ...userData, token },
     });
-  } catch (error) {
-    console.error("Error creating user:", error);
+  } catch (error: unknown) {
+    if (isAppError(error)) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -54,7 +57,10 @@ export const login = async (req: Request, res: Response) => {
       message: "Login successful",
       data: { ...userData, token },
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    if (isAppError(error)) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
     console.error("Error during login:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -82,7 +88,10 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
     res.status(200).json({ data: user });
-  } catch (error) {
+  } catch (error: unknown) {
+    if (isAppError(error)) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
     console.error("Error fetching current user:", error);
     res.status(500).json({ error: "Internal server error" });
   }

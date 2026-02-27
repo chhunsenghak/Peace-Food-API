@@ -6,7 +6,7 @@ export class UserDAO {
   }
 
   static async findById(id: string) {
-    return User.findById(id);
+    return User.findById(id).select("-password");
   }
 
   static async create(userData: IUser) {
@@ -18,7 +18,10 @@ export class UserDAO {
   }
 
   static async update(id: string, userData: Partial<IUser>) {
-    return User.findByIdAndUpdate(id, userData, { new: true });
+    return User.findByIdAndUpdate(id, userData, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
   }
 
   static async delete(id: string) {

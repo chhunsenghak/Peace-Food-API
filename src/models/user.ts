@@ -5,7 +5,7 @@ export interface IUser {
   email: string;
   username: string;
   password: string;
-  phoneNumber?: string;
+  phoneNumber: string;
   role: UserRole;
 }
 
@@ -14,7 +14,7 @@ const userSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true },
     username: { type: String, required: true },
     password: { type: String, required: true },
-    phoneNumber: { type: String },
+    phoneNumber: { type: String, required: true },
     role: {
       type: String,
       enum: Object.values(UserRole),

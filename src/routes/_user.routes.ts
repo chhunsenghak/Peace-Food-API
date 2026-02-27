@@ -53,7 +53,7 @@ router.get("/users/:id", authMiddleware, getUserById);
 /**
  * @swagger
  * /api/users/{id}:
- *   put:
+ *   patch:
  *     summary: Update a user by ID
  *     tags: [Users]
  *     parameters:
@@ -73,6 +73,15 @@ router.get("/users/:id", authMiddleware, getUserById);
  *               username:
  *                 type: string
  *                 example: johndoe
+ *               email: 
+ *                 type: string     
+ *                 example: nita@gmail.com
+ *               role: 
+ *                 type: string   
+ *                 example: staff
+ *               phoneNumber:
+ *                 type: string
+ *                 example: 1234567890
  *     responses:
  *       200:
  *         description: User updated successfully

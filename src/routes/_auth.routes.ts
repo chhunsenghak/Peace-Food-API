@@ -27,6 +27,7 @@ const router = Router();
  *               - email
  *               - username
  *               - password
+ *               - phoneNumber
  *             properties:
  *               email:
  *                 type: string
@@ -37,6 +38,9 @@ const router = Router();
  *               password:
  *                 type: string
  *                 example: 123456
+ *               phoneNumber:
+ *                 type: string
+ *                 example: 1234567890
  *     responses:
  *       201:
  *         description: User created successfully

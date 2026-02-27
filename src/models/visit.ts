@@ -1,11 +1,12 @@
 import { Schema, model } from "mongoose";
+import { StatusVisit } from "../enum/statusVisit";
 
 export interface IVisit {
   id: string;
   visitorId: string;
   serviceId: string;
   visitDate: Date;
-  status: "waiting" | "served" | "completed" | "skipped";
+  status: StatusVisit;
 }
 
 const visitSchema = new Schema<IVisit>(
@@ -16,8 +17,8 @@ const visitSchema = new Schema<IVisit>(
     visitDate: { type: Date, required: true },
     status: {
       type: String,
-      enum: ["waiting", "served", "completed", "skipped"],
-      default: "waiting",
+      enum: Object.values(StatusVisit),
+      default: StatusVisit.WAITING,
     },
   },
   { timestamps: true },

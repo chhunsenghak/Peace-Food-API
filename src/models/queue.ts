@@ -1,24 +1,23 @@
 import { Schema, model } from "mongoose";
+import { StatusQueue } from "../enum/statusVisit";
 
 export interface IQueue {
-  id: string;
   serviceId: string;
   visitorId: string;
   position: number;
   estimatedWaitTime: number; // in minutes
-  status: "waiting" | "served" | "skipped";
+  status: StatusQueue;
 }
 
 const queueSchema = new Schema<IQueue>(
   {
-    id: { type: String, required: true },
     serviceId: { type: String, required: true },
     visitorId: { type: String, required: true },
     position: { type: Number, required: true },
     status: {
       type: String,
-      enum: ["waiting", "served", "skipped"],
-      default: "waiting",
+      enum: Object.values(StatusQueue),
+      default: StatusQueue.WAITING,
     },
     estimatedWaitTime: { type: Number, required: true },
   },
