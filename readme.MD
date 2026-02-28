@@ -89,6 +89,69 @@ Default URL (if `PORT=3000`):
 - API: `http://localhost:3000/`
 - Swagger UI: `http://localhost:3000/api`
 
+\## Real-time Updates (Socket.IO)
+
+The API also exposes a Socket.IO server on the same port.
+
+\### Events emitted by the server
+
+When your REST endpoints create/update/delete records, the backend emits:
+
+- `visitor:created` / `visitor:deleted` (to the `visitors` room)
+- `queue:created` / `queue:updated` / `queue:deleted` (to the `queues` room)
+
+Each event payload looks like:
+
+```json
+{ "data": { /* the created/updated/deleted document */ } }
+```
+
+\### Example client (Node.js)
+
+Install a client (in your frontend project):
+
+```bash
+npm i socket.io-client
+```
+
+Then connect + subscribe:
+
+```ts
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000", {
+	withCredentials: true,
+});
+
+socket.on("connect", () => {
+	console.log("connected", socket.id);
+
+	// Subscribe to live updates
+	socket.emit("visitors:subscribe");
+	socket.emit("queues:subscribe");
+});
+
+socket.on("visitor:created", ({ data }) => {
+	console.log("New visitor:", data);
+});
+
+socket.on("visitor:deleted", ({ data }) => {
+	console.log("Visitor deleted:", data);
+});
+
+socket.on("queue:created", ({ data }) => {
+	console.log("New queue:", data);
+});
+
+socket.on("queue:updated", ({ data }) => {
+	console.log("Queue updated:", data);
+});
+
+socket.on("queue:deleted", ({ data }) => {
+	console.log("Queue deleted:", data);
+});
+```
+
 \## Scripts
 
 - `npm run dev` — start dev server with auto-reload

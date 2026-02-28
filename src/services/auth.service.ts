@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 import { IUser } from "../models/user";
 import { UserDAO } from "../dao/user.dao";
 import { ConflictError, NotFoundError, BadRequestError } from "../utils/error";
-import { JWT_SECRET } from "../config/jwt";
 
 export const registerUser = async (userData: IUser) => {
   try {
